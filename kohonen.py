@@ -1,6 +1,6 @@
 """
 Miniproject1: Unsupervised and Reinforcement Learning.
-authors: Sharbatanu Chatterjee, András Ecker
+authors: Sharbatanu Chatterjee, Andras Ecker
 """
 
 import numpy as np
@@ -99,7 +99,9 @@ if __name__ == "__main__":
 
 	# set the width of the neighborhood (via the width of the gaussian that describes it)
 	size_k = 6
-	sigma = np.sqrt(2.0 * size_k**2)/6.0  #TODO check where 6 comes from... (maybe size_k?)
+	sigma_factor = 6
+	sigma = np.sqrt(2.0 * size_k**2) / sigma_factor  # in the "real world" network size and the size of the neighbourhod should be correlated
+	sigma = 1  # hovewer, in the project they ask us to be stupid and play around and hard code sigma (to 1,3,5)
 
 	kohonen(size_k=size_k, sigma=sigma, eta=0.3, tmax=400)
 
