@@ -4,7 +4,6 @@ authors: Sharbatanu Chatterjee, Andras Ecker
 """
 
 import numpy as np
-import matplotlib.pylab as plb
 import matplotlib.pyplot as plt
 from helpers import *
 from figures import *
@@ -13,7 +12,7 @@ from figures import *
 def som_step(size_k, centers, data, neighbor, eta, sigma):
 	"""
 	Performs one step of the sequential learning for a self-organized map (SOM).
-	:param size_k:
+	:param size_k: size of the Kohonen map
     :param centers:  matrix - cluster centres. (center x dimension) (in this case dim=2)
 	:param data: vector - the actually presented datapoint to be presented in this timestep
 	:param neighbor: matrix - the coordinates of the centers in the desired neighborhood.
@@ -43,23 +42,25 @@ def som_step(size_k, centers, data, neighbor, eta, sigma):
 	return centers
 
 
-def kohonen(size_k, sigma, eta, tmax, data_range=10, dim=2, show_progress=True, n_clust=1, size_c=100, var_c=4):
+def kohonen(size_k, sigma, eta, tmax, exc6=True, data_range=10, dim=2, n_clust=1, size_c=100, var_c=4, show_progress=True):
 	"""
 	Learning in Kohonen map (using create_data, plot_data and som_step)
 	:param size_k: size of the Kohonen map 
 	:param sigma: width of the neighborhood
 	:param eta: learning rate
 	:param tmax: max iteration  #TODO make a better convergence crit!
+	:param exc6: logical flag (just to distinguish data and plotting style)
 	:param data_range: 255 for digits (miniproject), see create_data in helpers.py (exc6)
-	:param dim: 28*28 for digits (miniproject), see create_data in helpers.py (exc6)
-	:param show_progress: dispaly figure in every iteration (show_progress=False, faster-just saves the final figure)
+	:param dim: 28*28 for digits (miniproject), see create_data in helpers.py (exc6)	
 	:param n_clust, size_c, var_c: params of create_data in helpers.py (exc6)
+	:param show_progress: dispaly figure in every iteration (show_progress=False, faster-just saves the final figure)
 	"""
-
-	plb.close('all')
 	
-	#data = create_data(n_clust, data_range, var_c, size_c, dim) # create data (exc6)
-	data = load_data("Andras Ecker")  # load in numbers (miniproject1)
+	if exc6:
+		plb.close('all')  # just to make sure	
+		data = create_data(n_clust, data_range, var_c, size_c, dim)
+	else:
+		data = load_data("Andras Ecker")  # load in numbers (miniproject1)
 	dy, dx = data.shape
     
 	# initialise the centers randomly
@@ -71,46 +72,40 @@ def kohonen(size_k, sigma, eta, tmax, data_range=10, dim=2, show_progress=True, 
 	# set the random order in which the datapoints should be presented
 	i_random = np.arange(tmax) % dy
 	np.random.shuffle(i_random)
-		
-	handles = None # init handles
-	if show_progress: # for fancy iterative plot ! (set show=False to not show it)
-		plb.ion() # turn "interaction" on in pylab	
+	
+	if exc6:
+		import matplotlib.pylab as plb
+		handles = None # init handles
+		plb.ion() # turn "interaction" on in pylab
+			
 	
 
 	# core of the code:
 	for it, i in enumerate(i_random):
 		centers = som_step(size_k, centers, data[i,:], neighbor, eta, sigma)  # update centers
-		#handles = plot_data(centers, data, neighbor, sigma, eta, it, tmax, handles)  # update plot
-		if show_progress:	
-			plb.draw()
-			plb.show()
-			plb.pause(1e-7)
+
+		if exc6:
+			handles = plot_data(centers, data, neighbor, sigma, eta, it, tmax, handles)  # update plot
+			if show_progress: # for fancy iterative plot ! (set show=False to not show it)
+				plb.draw()
+				plb.show()
+				plb.pause(1e-7)
 		
 	
-	if show_progress:
-	# leave the window open at the end of the loop
+	if exc6:
+		# leave the window open at the end of the loop for 3s and save fig
 		plb.draw()
 		plb.show()
 		plb.waitforbuttonpress(timeout=3)
-
 		# save figure
 		from datetime import datetime as dt
 		time_ = dt.now().strftime('%Y-%m-%d_%H:%M:%S')
 		figName = 'figures/kohonen_it:%s(%s).jpg'%(tmax, time_)
 		plb.savefig(figName)
+	else:
+		plot_results(size_k, centers)
 
 	print("-----terminated; figure saved!-----")
-
-
-	# for visualization, you can use this:
-	fig = plt.figure(figsize=(10,8))
-	for i in range(size_k**2):
-		ax = fig.add_subplot(size_k, size_k, i+1)
-        
-		ax.imshow(np.reshape(centers[i,:], [28, 28]),interpolation='bilinear')
-		#plt.axis('off')
-
-	plt.show()
 
 
 if __name__ == "__main__":
@@ -123,6 +118,6 @@ if __name__ == "__main__":
 	sigma = 3  # hovewer, in the project they ask us to be stupid and play around and hard code sigma (to 1,3,5 - miniproject)
 
 	#kohonen(size_k=size_k, sigma=sigma, eta=0.3, tmax=400)  # for exc6
-	kohonen(size_k=size_k, sigma=sigma, eta=0.3, tmax=1000, data_range=255, dim=28*28, show_progress=False)
+	kohonen(size_k=size_k, sigma=sigma, eta=0.3, tmax=1000, exc6=False, data_range=255, dim=28*28)  # for miniproject
 
 

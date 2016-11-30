@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 
 def plot_data(centers, data, neighbor, sigma, eta, it, tmax, handles):
-	"""Plot self-organising map (SOM) data.
+	"""Plot self-organising map (SOM) data (exc6)
 	This includes the used datapoints as well as the cluster centres and neighborhoods.
  	:param centers:  (matrix) cluster centres to be plotted. Have to be in format: center X dimension (in this case 2)
 	:param data: (matrix) datapoints to be plotted. have to be in the same format as centers
@@ -21,7 +21,7 @@ def plot_data(centers, data, neighbor, sigma, eta, it, tmax, handles):
 	if handles is None:  # it is the first time we call this method: create the graphs
 		a, b = centers.shape
         
-		# handles = [figure, scatter_centers, scatter_data, plot_centers_1, plot_centers_2]
+		# handles = [figure, scatter_centers, scatter_data, plot_centers_1, plot_centers_2, ...]
 		handles = []
 		handles.append(plb.figure(figsize=(10,8)))
         
@@ -68,4 +68,26 @@ def plot_data(centers, data, neighbor, sigma, eta, it, tmax, handles):
 
 # ===========================================================================================================
 
+
+def plot_results(size_k, centers):
+	"""
+	plots the predicted digites (and saves the plot)
+	:param size_k: size of the Kohonen map
+	:param centers: (matrix) cluster centres to be plotted
+	"""
+
+	fig = plt.figure(figsize=(10,8))
+	for i in range(size_k**2):
+		ax = fig.add_subplot(size_k, size_k, i+1)
+        
+		ax.imshow(np.reshape(centers[i,:], [28, 28]),interpolation='bilinear')
+		plt.axis('off')
+
+	# save figure
+	from datetime import datetime as dt
+	time_ = dt.now().strftime('%Y-%m-%d_%H:%M:%S')
+	figName = 'figures/kohonen_(%s).jpg'%(time_)
+	fig.savefig(figName)
+
+	plt.show()
 
