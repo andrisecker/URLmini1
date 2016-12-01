@@ -6,6 +6,7 @@ helper file for plots
 import numpy as np
 import matplotlib.pylab as plb
 import matplotlib.pyplot as plt
+from datetime import datetime as dt
 
 
 def plot_data(centers, data, neighbor, sigma, eta, it, tmax, handles):
@@ -69,25 +70,85 @@ def plot_data(centers, data, neighbor, sigma, eta, it, tmax, handles):
 # ===========================================================================================================
 
 
-def plot_results(size_k, centers):
+def plot_errors(MAEs, step_size=200):
+	"""
+	plots "convergence criteria"
+	:param MAEs: (list) Mean Absolute Erros (prev iteration, current iteration)
+	:param step_size: step size for computing mean and var
+	"""
+
+	points = np.arange(step_size, len(MAEs), step_size)
+
+	meanMAEs = []
+	varMAEs = []
+	for p in points:
+		meanMAEs.append(np.mean(MAEs[0:p]))
+		varMAEs.append(np.var(MAEs[0:p]))
+	
+	fig = plt.figure(figsize=(10,8))
+	ax = fig.add_subplot(2,1,1)
+
+	ax.plot(MAEs, 'b-', marker='|', linewidth=2, label="MAE")
+	ax.set_title("Mean Absolute Error")
+	ax.set_xlabel("iteration")
+	ax.set_xlim([0, len(MAEs)-1])
+	ax.legend()
+
+	ax2 = fig.add_subplot(2,1,2)
+	ax3 = ax2.twinx()
+
+	ax3.plot(meanMAEs, 'r-', marker='|', linewidth=2, label="mean(MAE)")
+	ax3.set_ylabel(ylabel='mean(MAE)', color='red')
+	ax2.plot(varMAEs, 'b-', marker='|', linewidth=2, label="var(MAE)")
+	ax2.set_ylabel(ylabel='var(MAE)', color='blue')
+	ax2.set_title("mean and var MAE")
+	ax2.set_xlabel("*%s iteration"%step_size)
+	ax2.set_xlim([0, len(meanMAEs)-1])
+	ax2.legend(loc=2)
+	ax3.legend(loc=1)
+
+	fig.tight_layout()
+
+	# save figure	
+	time_ = dt.now().strftime('%Y-%m-%d_%H:%M:%S')
+	figName = 'figures/kohonen_MAE_(%s).jpg'%(time_)
+	fig.savefig(figName)
+	
+	#plt.show()
+
+def plot_results(size_k, centers, ideal_prototypes, MAEs):
 	"""
 	plots the predicted digites (and saves the plot)
 	:param size_k: size of the Kohonen map
 	:param centers: (matrix) cluster centres to be plotted
+	:param ideal_prototypes: (map) with ideal prototypes (average of every sample belonging, to that prototype) -> used to assign labels
+	:param MASs: used by plot_errors
 	"""
 
 	fig = plt.figure(figsize=(10,8))
 	for i in range(size_k**2):
+		
+		# calculate closest prototype (identified with labels)
+		tmp = {}
+		for key, val in ideal_prototypes.iteritems():
+			tmp[key] = np.sum((centers[i,:] - val)**2) / centers.shape[1]
+		#print(tmp)
+		label = min(tmp, key=tmp.get)					
+		
 		ax = fig.add_subplot(size_k, size_k, i+1)
         
 		ax.imshow(np.reshape(centers[i,:], [28, 28]),interpolation='bilinear')
+		ax.set_title(label)
 		plt.axis('off')
 
-	# save figure
-	from datetime import datetime as dt
+	#fig.tight_layout()
+
+	# save figure	
 	time_ = dt.now().strftime('%Y-%m-%d_%H:%M:%S')
 	figName = 'figures/kohonen_(%s).jpg'%(time_)
 	fig.savefig(figName)
+
+	plot_errors(MAEs)
 
 	plt.show()
 

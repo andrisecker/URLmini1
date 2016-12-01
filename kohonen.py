@@ -60,8 +60,7 @@ def kohonen(size_k, sigma, eta, tmax, exc6=True, data_range=10, dim=2, n_clust=1
 		plb.close('all')  # just to make sure	
 		data = create_data(n_clust, data_range, var_c, size_c, dim)
 	else:
-		data = load_data("Andras Ecker")  # load in numbers (miniproject1)
-	dy, dx = data.shape
+		data, ideal_prototypes = load_data("Sharbatanu Chatterjee", dim)  # load in numbers (miniproject1)
     
 	# initialise the centers randomly
 	centers = np.random.rand(size_k**2, dim) * data_range
@@ -70,19 +69,26 @@ def kohonen(size_k, sigma, eta, tmax, exc6=True, data_range=10, dim=2, n_clust=1
 	neighbor = np.arange(size_k**2).reshape((size_k, size_k))
     
 	# set the random order in which the datapoints should be presented
-	i_random = np.arange(tmax) % dy
+	i_random = np.arange(tmax) % data.shape[0]
 	np.random.shuffle(i_random)
 	
 	if exc6:
 		import matplotlib.pylab as plb
 		handles = None # init handles
 		plb.ion() # turn "interaction" on in pylab
-			
 	
+	MAEs = []
+	prev_centers = np.copy(centers)
+	sigma_step = (sigma-0.2)/tmax # decrease sigma to 0.2 during the whole process
 
 	# core of the code:
 	for it, i in enumerate(i_random):
-		centers = som_step(size_k, centers, data[i,:], neighbor, eta, sigma)  # update centers
+
+		#centers = som_step(size_k, centers, data[i,:], neighbor, eta, sigma)  # update centers
+		centers = som_step(size_k, centers, data[i,:], neighbor, eta, sigma=(sigma-it*sigma_step))  # update centers, decreasing sigma
+
+		MAEs.append(np.sum(np.abs(prev_centers-centers)) / data.shape[0])
+		prev_centers = np.copy(centers)	
 
 		if exc6:
 			handles = plot_data(centers, data, neighbor, sigma, eta, it, tmax, handles)  # update plot
@@ -103,7 +109,9 @@ def kohonen(size_k, sigma, eta, tmax, exc6=True, data_range=10, dim=2, n_clust=1
 		figName = 'figures/kohonen_it:%s(%s).jpg'%(tmax, time_)
 		plb.savefig(figName)
 	else:
-		plot_results(size_k, centers)
+		plot_results(size_k, centers, ideal_prototypes, MAEs)
+
+	#plot_errors(MSEs, MAEs)
 
 	print("-----terminated; figure saved!-----")
 
@@ -118,6 +126,6 @@ if __name__ == "__main__":
 	sigma = 3  # hovewer, in the project they ask us to be stupid and play around and hard code sigma (to 1,3,5 - miniproject)
 
 	#kohonen(size_k=size_k, sigma=sigma, eta=0.3, tmax=400)  # for exc6
-	kohonen(size_k=size_k, sigma=sigma, eta=0.3, tmax=1000, exc6=False, data_range=255, dim=28*28)  # for miniproject
+	kohonen(size_k=size_k, sigma=sigma, eta=0.7, tmax=10000, exc6=False, data_range=255, dim=28*28)  # for miniproject
 
 

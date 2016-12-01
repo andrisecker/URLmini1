@@ -63,11 +63,13 @@ def name2digits(name):
 	return np.sort(x[t, :])
 
 
-def load_data(name):
+def load_data(name, dim):
 	"""
 	loads in data (and labels) and selects 4 digits to work with
 	:param name: (string) used by name2digits
-	:return data matrix
+	:param dim: used only to create labels
+	:return red_data: data matrix used in the miniproject
+	:return ideal_prototypes: (map) with ideal prototypes (average of every sample belonging, to that prototype)
 	"""
 
 	# load in data and labels
@@ -75,11 +77,17 @@ def load_data(name):
 	labels = np.loadtxt('data/labels.txt')
 
 	targetdigits = name2digits(name)
-	#print(targetdigits)
 
-	data = data[np.logical_or.reduce([labels==x for x in targetdigits]),:]
+	red_data = data[np.logical_or.reduce([labels==x for x in targetdigits]),:]
 
-	return data
+	# assign labels to the results
+	ideal_prototypes = {}
+	for td in targetdigits:
+		inds = np.where(labels == td)[0]
+		ideal_prototypes[td] = np.mean(data[inds,:], axis=0)
+
+	return red_data, ideal_prototypes
+
 
 
 
