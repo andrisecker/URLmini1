@@ -159,14 +159,21 @@ def kohonen(size_k, sigma, eta, tmax, exc6=True, data_range=10, dim=2, n_clust=1
 
 if __name__ == "__main__":
 	
-	size_k = 6
+	size_k = [6,7] #Sharbat
+	#size_k = [8,10] #Andras
 	
 	# set the width of the neighborhood (via the width of the gaussian that describes it)
 	sigma_factor = 6
 	#sigma = np.sqrt(2.0 * size_k**2) / sigma_factor  # in the "real world" network size and the size of the neighbourhod should be correlated (exc6)
-	sigma = 3  # hovewer, in the project they ask us to be stupid and play around and hard code sigma (to 1,3,5 - miniproject)
+	sigma = [1,3,5]  # hovewer, in the project they ask us to be stupid and play around and hard code sigma (to 1,3,5 - miniproject)
+	etas = np.arange(0.1,1,0.1)
+
+
 
 	#kohonen(size_k=size_k, sigma=sigma, eta=0.3, tmax=400)  # for exc6
-	kohonen(size_k=size_k, sigma=sigma, eta=0.7, tmax=10000, exc6=False, data_range=255, dim=28*28)  # for miniproject
+	for s in size_k:
+		for sig in sigma:
+			for rate in etas:
+			kohonen(size_k=s, sigma=sig, eta=rate, tmax=10000, exc6=False, data_range=255, dim=28*28)  # for miniproject
 
 
