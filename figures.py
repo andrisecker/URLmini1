@@ -8,6 +8,17 @@ import matplotlib.pylab as plb
 import matplotlib.pyplot as plt
 from datetime import datetime as dt
 
+mplPars = { #'text.usetex'       :    True,
+            'axes.labelsize'    :   'large',
+            'font.family'       :   'serif',
+            'font.sans-serif'   :   'computer modern roman',
+            'font.size'         :    18,
+            'xtick.labelsize'   :    16,
+            'ytick.labelsize'   :    16
+            }
+for key, val in mplPars.items():
+    plt.rcParams[key] = val
+
 
 def plot_data(centers, data, neighbor, sigma, eta, it, tmax, handles):
 	"""Plot self-organising map (SOM) data (exc6)
@@ -69,6 +80,27 @@ def plot_data(centers, data, neighbor, sigma, eta, it, tmax, handles):
 
 # ===========================================================================================================
 
+
+def plot_ideal_prototypes(ideal_prototypes):
+	"""
+	plots the ideal prototypes (made by averaging the prototypes corresponding to one digit)
+	:param ideal_prototypes: (dictionary) key: label, val: coordinates of the prototype (1*784)
+	"""
+
+	fig = plt.figure(figsize=(10,8))
+	
+	
+	for i, (label, val) in enumerate(ideal_prototypes.iteritems(), 1):  # look at this loop !
+		ax = fig.add_subplot(2, 2, i)		
+        
+		ax.imshow(np.reshape(val, [28, 28]),interpolation='bilinear')
+		ax.set_title(label)
+		plt.axis('off')
+
+	#fig.tight_layout()
+	figName = 'figures/ideal_prototypes.jpg'
+	fig.savefig(figName)
+	#plt.show()
 
 def plot_errors(MAEs, step_size=200):
 	"""
@@ -133,11 +165,12 @@ def plot_results(size_k, centers, ideal_prototypes, MAEs):
 		for key, val in ideal_prototypes.iteritems():
 			tmp[key] = np.sum((centers[i,:] - val)**2) / centers.shape[1]
 		#print(tmp)
-		label = min(tmp, key=tmp.get)					
+		label = min(tmp, key=tmp.get)
 		
 		ax = fig.add_subplot(size_k, size_k, i+1)
         
 		ax.imshow(np.reshape(centers[i,:], [28, 28]),interpolation='bilinear')
+		#print("min:%s, max:%s"%(np.min(centers[i,:]), np.min(centers[i,:])))
 		ax.set_title(label)
 		plt.axis('off')
 

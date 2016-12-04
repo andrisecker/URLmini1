@@ -3,6 +3,7 @@ helper file for exc6 and miniproject1
 """
 
 import numpy as np
+from figures import plot_ideal_prototypes
 
 
 def create_data(n_clust, data_range, var_c, size_c, dim):
@@ -65,11 +66,11 @@ def name2digits(name):
 
 def load_data(name, dim):
 	"""
-	loads in data (and labels) and selects 4 digits to work with
+	loads in data (and labels), selects 4 digits to work with and creates ideal prototypes (by averaging the prototypes corresponding to one digit)
 	:param name: (string) used by name2digits
 	:param dim: used only to create labels
 	:return red_data: data matrix used in the miniproject
-	:return ideal_prototypes: (map) with ideal prototypes (average of every sample belonging, to that prototype)
+	:return ideal_prototypes: (dictionary) key: label, val: coordinates of the prototype (1*784)
 	"""
 
 	# load in data and labels
@@ -85,6 +86,8 @@ def load_data(name, dim):
 	for td in targetdigits:
 		inds = np.where(labels == td)[0]
 		ideal_prototypes[td] = np.mean(data[inds,:], axis=0)
+
+	plot_ideal_prototypes(ideal_prototypes)
 
 	return red_data, ideal_prototypes
 
