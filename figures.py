@@ -13,8 +13,8 @@ mplPars = { #'text.usetex'       :    True,
             'font.family'       :   'serif',
             'font.sans-serif'   :   'computer modern roman',
             'font.size'         :    18,
-            'xtick.labelsize'   :    16,
-            'ytick.labelsize'   :    16
+            'xtick.labelsize'   :    14,
+            'ytick.labelsize'   :    14
             }
 for key, val in mplPars.items():
     plt.rcParams[key] = val
@@ -100,36 +100,38 @@ def plot_ideal_prototypes(ideal_prototypes):
 	#fig.tight_layout()
 	figName = 'figures/ideal_prototypes.jpg'
 	fig.savefig(figName)
-	#plt.show()
+	plt.close()
 
-def plot_errors(MAEs, step_size=200):
+
+def plot_errors(MSEs, step_size, eta, sigma, size_k):  
 	"""
 	plots "convergence criteria"
-	:param MAEs: (list) Mean Absolute Erros (prev iteration, current iteration)
+	:param MSEs: (list) Mean Squared Erros (prev iteration, current iteration)
 	:param step_size: step size for computing mean and var
 	"""
 
-	points = np.arange(step_size, len(MAEs), step_size)
+	points = np.arange(step_size, len(MSEs), step_size)
 
-	meanMAEs = []
-	varMAEs = []
-	CVMAEs = []
+	# recalculate CVs
+	meanMSEs = []
+	varMSEs = []
+	CVMSEs = []
 	for p in points:
-		meanMAEs.append(np.mean(MAEs[0:p]))
-		varMAEs.append(np.var(MAEs[0:p]))
-		CV = 100*((np.sqrt(np.var(MAEs[0:p])))/(np.mean(MAEs[0:p])))
-		CVMAEs.append(CV)
-
+		meanMSEs.append(np.mean(MSEs[0:p]))
+		varMSEs.append(np.var(MSEs[0:p]))
+		CV = 100*((np.sqrt(np.var(MSEs[0:p])))/(np.mean(MSEs[0:p])))
+		CVMSEs.append(CV)
 	
 	fig = plt.figure(figsize=(10,8))
-	ax = fig.add_subplot(3,1,1)
+	ax = fig.add_subplot(2,1,1)
 
-	ax.plot(MAEs, 'b-', marker='|', linewidth=2, label="MAE")
-	ax.set_title("Mean Absolute Error")
+	ax.plot(MSEs, 'b-', marker='|', linewidth=2, label="MSE")
+	ax.set_title("CV_MSE eta:%s, step_size:%s, sigma:%s, network_size:%s"%(step_size, eta, sigma, size_k))
 	ax.set_xlabel("iteration")
-	ax.set_xlim([0, len(MAEs)-1])
+	ax.set_ylabel(ylabel='MSE', color='blue')
+	ax.set_xlim([0, len(MSEs)])
 	ax.legend()
-
+	"""
 	ax2 = fig.add_subplot(3,1,2)
 	ax3 = ax2.twinx()
 
@@ -142,21 +144,22 @@ def plot_errors(MAEs, step_size=200):
 	ax2.set_xlim([0, len(meanMAEs)-1])
 	ax2.legend(loc=2)
 	ax3.legend(loc=1)
-
-	ax4 = fig.add_subplot(3,1,3)
-	ax4.plot(CVMAEs, 'r-', marker='|', linewidth=2, label="CV")
+	"""
+	ax4 = fig.add_subplot(2,1,2)
+	ax4.plot(CVMSEs, 'r-', marker='|', linewidth=2, label="CV")
+	ax4.set_xlabel("*%s iteration"%step_size)
 	ax4.set_ylabel(ylabel='CV', color='red')
 
 	fig.tight_layout()
 
-	# save figure	
+	# save figure
 	time_ = dt.now().strftime('%Y-%m-%d_%H:%M:%S')
 	figName = 'figures/kohonen_MAE_(%s).png'%(time_)
 	fig.savefig(figName)
 	
 	#plt.show()
 
-def plot_results(size_k, centers, ideal_prototypes, MAEs):
+def plot_results(size_k, centers, ideal_prototypes, MSEs, eta, sigma, step_size):
 	"""
 	plots the predicted digites (and saves the plot)
 	:param size_k: size of the Kohonen map
@@ -172,7 +175,6 @@ def plot_results(size_k, centers, ideal_prototypes, MAEs):
 		tmp = {}
 		for key, val in ideal_prototypes.items():
 			tmp[key] = np.sum((centers[i,:] - val)**2) / centers.shape[1]
-		#print(tmp)
 		label = min(tmp, key=tmp.get)
 		
 		ax = fig.add_subplot(size_k, size_k, i+1)
@@ -189,7 +191,7 @@ def plot_results(size_k, centers, ideal_prototypes, MAEs):
 	figName = 'figures/kohonen_(%s).png'%(time_)
 	fig.savefig(figName)
 
-	plot_errors(MAEs)
+	plot_errors(MSEs, step_size, eta, sigma, size_k)
 
 	plt.show()
 

@@ -77,9 +77,8 @@ def kohonen(size_k, sigma, eta, tmax, exc6=True, data_range=10, dim=2, n_clust=1
 		handles = None # init handles
 		plb.ion() # turn "interaction" on in pylab
 	
-	MAEs = []
-	MSEs = []
-	
+	# MAEs
+	MSEs = []	
 	prev_centers = np.copy(centers)
 	sigma_step = (sigma-0.2)/tmax # decrease sigma to 0.2 during the whole process
 
@@ -91,7 +90,7 @@ def kohonen(size_k, sigma, eta, tmax, exc6=True, data_range=10, dim=2, n_clust=1
 	meanMSEs = []
 	CVMSEs = []
 
-	thres_iter = 3
+	thres_iter = 5
 	step_size = 10
 	count = 0
 	prev_step = 0
@@ -104,7 +103,7 @@ def kohonen(size_k, sigma, eta, tmax, exc6=True, data_range=10, dim=2, n_clust=1
 		#change sigma to 1,3,5 and get the results at least
 		centers = som_step(size_k, centers, data[i,:], neighbor, eta, sigma=(sigma-it*sigma_step))  # update centers, decreasing sigma
 
-		MAEs.append(np.sum(np.abs(prev_centers-centers)) / data.shape[0])
+		#MAEs.append(np.sum(np.abs(prev_centers-centers)) / data.shape[0])
 
 		MSEs.append(np.sum((prev_centers-centers)**2)/data.shape[0]) #the paper looks at MSE, so just in case
 
@@ -133,8 +132,6 @@ def kohonen(size_k, sigma, eta, tmax, exc6=True, data_range=10, dim=2, n_clust=1
 
 		#####
 
-
-
 		if exc6:
 			handles = plot_data(centers, data, neighbor, sigma, eta, it, tmax, handles)  # update plot
 			if show_progress: # for fancy iterative plot ! (set show=False to not show it)
@@ -155,9 +152,7 @@ def kohonen(size_k, sigma, eta, tmax, exc6=True, data_range=10, dim=2, n_clust=1
 		plb.savefig(figName)
 	else:
 		#plot_results(size_k, centers, ideal_prototypes, MAEs)
-		plot_results(size_k, centers, ideal_prototypes, MSEs)
-
-	#plot_errors(MSEs, MAEs)
+		plot_results(size_k, centers, ideal_prototypes, MSEs, eta, sigma, step_size)
 
 	print("-----terminated; figure saved!-----")
 
