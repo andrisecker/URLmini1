@@ -113,12 +113,16 @@ def plot_errors(MAEs, step_size=200):
 
 	meanMAEs = []
 	varMAEs = []
+	CVMAEs = []
 	for p in points:
 		meanMAEs.append(np.mean(MAEs[0:p]))
 		varMAEs.append(np.var(MAEs[0:p]))
+		CV = 100*((np.sqrt(np.var(MAEs[0:p])))/(np.mean(MAEs[0:p])))
+		CVMAEs.append(CV)
+
 	
 	fig = plt.figure(figsize=(10,8))
-	ax = fig.add_subplot(2,1,1)
+	ax = fig.add_subplot(3,1,1)
 
 	ax.plot(MAEs, 'b-', marker='|', linewidth=2, label="MAE")
 	ax.set_title("Mean Absolute Error")
@@ -126,7 +130,7 @@ def plot_errors(MAEs, step_size=200):
 	ax.set_xlim([0, len(MAEs)-1])
 	ax.legend()
 
-	ax2 = fig.add_subplot(2,1,2)
+	ax2 = fig.add_subplot(3,1,2)
 	ax3 = ax2.twinx()
 
 	ax3.plot(meanMAEs, 'r-', marker='|', linewidth=2, label="mean(MAE)")
@@ -139,11 +143,15 @@ def plot_errors(MAEs, step_size=200):
 	ax2.legend(loc=2)
 	ax3.legend(loc=1)
 
+	ax4 = fig.add_subplot(3,1,3)
+	ax4.plot(CVMAEs, 'r-', marker='|', linewidth=2, label="CV")
+	ax4.set_ylabel(ylabel='CV', color='red')
+
 	fig.tight_layout()
 
 	# save figure	
 	time_ = dt.now().strftime('%Y-%m-%d_%H:%M:%S')
-	figName = 'figures/kohonen_MAE_(%s).jpg'%(time_)
+	figName = 'figures/kohonen_MAE_(%s).png'%(time_)
 	fig.savefig(figName)
 	
 	#plt.show()
@@ -162,7 +170,7 @@ def plot_results(size_k, centers, ideal_prototypes, MAEs):
 		
 		# calculate closest prototype (identified with labels)
 		tmp = {}
-		for key, val in ideal_prototypes.iteritems():
+		for key, val in ideal_prototypes.items():
 			tmp[key] = np.sum((centers[i,:] - val)**2) / centers.shape[1]
 		#print(tmp)
 		label = min(tmp, key=tmp.get)
@@ -178,7 +186,7 @@ def plot_results(size_k, centers, ideal_prototypes, MAEs):
 
 	# save figure	
 	time_ = dt.now().strftime('%Y-%m-%d_%H:%M:%S')
-	figName = 'figures/kohonen_(%s).jpg'%(time_)
+	figName = 'figures/kohonen_(%s).png'%(time_)
 	fig.savefig(figName)
 
 	plot_errors(MAEs)
