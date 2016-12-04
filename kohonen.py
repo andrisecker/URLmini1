@@ -57,6 +57,7 @@ def kohonen(size_k, sigma, eta, tmax, exc6=True, data_range=10, dim=2, n_clust=1
 	"""
 	
 	if exc6:
+		import matplotlib.pylab as plb
 		plb.close('all')  # just to make sure	
 		data = create_data(n_clust, data_range, var_c, size_c, dim)
 	else:
@@ -73,7 +74,6 @@ def kohonen(size_k, sigma, eta, tmax, exc6=True, data_range=10, dim=2, n_clust=1
 	np.random.shuffle(i_random)
 	
 	if exc6:
-		import matplotlib.pylab as plb
 		handles = None # init handles
 		plb.ion() # turn "interaction" on in pylab
 	
@@ -95,7 +95,7 @@ def kohonen(size_k, sigma, eta, tmax, exc6=True, data_range=10, dim=2, n_clust=1
 			if show_progress: # for fancy iterative plot ! (set show=False to not show it)
 				plb.draw()
 				plb.show()
-				plb.pause(1e-7)
+				plb.pause(1-7)
 		
 	
 	if exc6:
