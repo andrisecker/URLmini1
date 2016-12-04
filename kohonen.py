@@ -42,6 +42,7 @@ def som_step(size_k, centers, data, neighbor, eta, sigma):
 	return centers
 
 
+
 def kohonen(size_k, sigma, eta, tmax, thres_iter, exc6=True, data_range=10, dim=2, n_clust=1, size_c=100, var_c=4, show_progress=True):
 	"""
 	Learning in Kohonen map (using create_data, plot_data and som_step)
