@@ -12,9 +12,9 @@ mplPars = { #'text.usetex'       :    True,
             'axes.labelsize'    :   'large',
             'font.family'       :   'serif',
             'font.sans-serif'   :   'computer modern roman',
-            'font.size'         :    18,
-            'xtick.labelsize'   :    14,
-            'ytick.labelsize'   :    14
+            'font.size'         :    14,
+            'xtick.labelsize'   :    12,
+            'ytick.labelsize'   :    12
             }
 for key, val in mplPars.items():
     plt.rcParams[key] = val
@@ -126,7 +126,7 @@ def plot_errors(MSEs, step_size, eta, sigma, size_k):
 	ax = fig.add_subplot(2,1,1)
 
 	ax.plot(MSEs, 'b-', marker='|', linewidth=2, label="MSE")
-	ax.set_title("CV_MSE eta:%s, step_size:%s, sigma:%s, network_size:%s"%(step_size, eta, sigma, size_k))
+	ax.set_title("CV_MSE step_size:%s, eta:%s, sigma:%s, network_size:%s"%(step_size, eta, sigma, size_k))
 	ax.set_xlabel("iteration")
 	ax.set_ylabel(ylabel='MSE', color='blue')
 	ax.set_xlim([0, len(MSEs)])
@@ -147,14 +147,16 @@ def plot_errors(MSEs, step_size, eta, sigma, size_k):
 	"""
 	ax4 = fig.add_subplot(2,1,2)
 	ax4.plot(CVMSEs, 'r-', marker='|', linewidth=2, label="CV")
+	ax.set_xlim([0, len(CVMSEs)])
 	ax4.set_xlabel("*%s iteration"%step_size)
 	ax4.set_ylabel(ylabel='CV', color='red')
+	ax4.legend()
 
 	fig.tight_layout()
 
 	# save figure
 	time_ = dt.now().strftime('%Y-%m-%d_%H:%M:%S')
-	figName = 'figures/kohonen_MAE_(%s).png'%(time_)
+	figName = 'figures/kohonen_MSE_(%s).png'%(time_)
 	fig.savefig(figName)
 	
 	#plt.show()
