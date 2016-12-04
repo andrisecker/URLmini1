@@ -42,7 +42,7 @@ def som_step(size_k, centers, data, neighbor, eta, sigma):
 	return centers
 
 
-def kohonen(size_k, sigma, eta, tmax, exc6=True, data_range=10, dim=2, n_clust=1, size_c=100, var_c=4, thres_iter, show_progress=True):
+def kohonen(size_k, sigma, eta, tmax, thres_iter, exc6=True, data_range=10, dim=2, n_clust=1, size_c=100, var_c=4, show_progress=True):
 	"""
 	Learning in Kohonen map (using create_data, plot_data and som_step)
 	:param size_k: size of the Kohonen map 
@@ -167,7 +167,6 @@ if __name__ == "__main__":
 	#sigma = np.sqrt(2.0 * size_k**2) / sigma_factor  # in the "real world" network size and the size of the neighbourhod should be correlated (exc6)
 	sigma = [1,3,5]  # hovewer, in the project they ask us to be stupid and play around and hard code sigma (to 1,3,5 - miniproject)
 	etas = np.arange(0.1,1,0.1)
-
 	thres_iter = [3,4,5]
 
 
@@ -176,6 +175,6 @@ if __name__ == "__main__":
 		for sig in sigma:
 			for rate in etas:
 				for t in thres_iter:
-					kohonen(size_k=s, sigma=sig, eta=rate, tmax=10000, exc6=False, data_range=255, dim=28*28, thres_iter=t)  # for miniproject
+					kohonen(size_k=s, sigma=sig, eta=rate, tmax=10000, thres_iter=t, exc6=False, data_range=255, dim=28*28)  # for miniproject
 
 
