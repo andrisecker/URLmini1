@@ -159,8 +159,8 @@ def kohonen(size_k, sigma, eta, tmax, exc6=True, data_range=10, dim=2, n_clust=1
 
 if __name__ == "__main__":
 	
-	size_k = [6,7] #Sharbat
-	#size_k = [8,10] #Andras
+	#size_k = [6,7] #Sharbat
+	size_k = [8,10] #Andras
 	
 	# set the width of the neighborhood (via the width of the gaussian that describes it)
 	sigma_factor = 6
